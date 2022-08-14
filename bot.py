@@ -1,35 +1,41 @@
 import os
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 import telebot
-from datetime import datetime
+from telebot import types
 
-load_dotenv()
+#load_dotenv()
 
-BOT_TOKEN = os.getenv('BOT_TOKEN')
-bot = telebot.TeleBot(BOT_TOKEN)
+#BOT_TOKEN = os.getenv('BOT_TOKEN')
 
+bot = telebot.TeleBot('5547802687:AAHjoyUmsX61_psRwTG5sIJqqkqn9bGTOfc')
 
 @bot.message_handler(commands=['start'])
 def start(message):
-    bot.send_message(message.chat.id, "Бот запущен!")
+    bot.send_message(message.chat.id, message.text)
 
 
-@bot.message_handler(commands=['help'])
-def help(message):
-    now = datetime.now()
-    current_time = now.strftime("%H:%M:%S")
-    bot.send_message(message.chat.id, "Текущее время - " + current_time)
+# @bot.message_handler(func=lambda message:True)
+# def echo(message):
+#     bot.send_message(message.chat.id, message.text)
 
 
-@bot.message_handler(commands=['hi'])
-def hi(message):
-    bot.send_message(message.chat.id, f'<b>Привет</b>, {message.from_user.first_name} {message.from_user.last_name}!', parse_mode='html')
+@bot.message_handler(commands=['menu'])
+def menu(message):
+    menu = types.ReplyKeyboardMarkup()
+
+    menu_item1 = types.KeyboardButton('Анекдоты')
+    menu_item2 = types.KeyboardButton('Видео Димы Ботева')
+    menu_item3 = types.KeyboardButton('Сюрприз')
+
+    menu.add(menu_item1, menu_item2, menu_item3)
+
+    bot.send_message(message.chat.id, 'Выберите команду:', reply_markup=menu)
 
 
-@bot.message_handler(commands=['send_image'])
-def send_image(message):
-    image = open('image.jpg', 'rb')
-    bot.send_photo(message.chat.id, image)
+@bot.message_handler(regexp='Видео Димы Ботева')
+def video(message):
+    video = open('botev.mp4', 'rb')
+    bot.send_video(message.chat.id, video)
 
 
 bot.polling(none_stop=True)
